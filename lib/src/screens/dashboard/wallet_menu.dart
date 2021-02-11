@@ -6,6 +6,7 @@ import 'package:cake_wallet/routes.dart';
 import 'package:cake_wallet/generated/i18n.dart';
 import 'package:cake_wallet/src/screens/auth/auth_page.dart';
 import 'package:cake_wallet/src/widgets/alert_with_two_actions.dart';
+import 'package:flutter/services.dart';
 
 // FIXME: terrible design
 
@@ -44,9 +45,12 @@ class WalletMenu {
               width: 16,
               color: Palette.darkBlue)),
       WalletMenuItem(
+          title: 'Help',
+          image: null),
+      WalletMenuItem(
           title: S.current.settings_title,
           image: Image.asset('assets/images/settings_menu.png',
-              height: 16, width: 16)),
+              height: 16, width: 16))
     ]);
   }
 
@@ -97,6 +101,9 @@ class WalletMenu {
         });
         break;
       case 7:
+        _startLiveChat();
+        break;
+      case 8:
         Navigator.of(context).pushNamed(Routes.settings);
         break;
       default:
@@ -119,5 +126,15 @@ class WalletMenu {
               },
               actionLeftButton: () => Navigator.of(context).pop());
         });
+  }
+
+  Future<void> _startLiveChat() async {
+    final liveChatChannel = MethodChannel('com.cakewallet.cake_wallet/live-chat');
+
+    try {
+      await liveChatChannel.invokeMethod<void>('startLiveChat');
+    } catch (e) {
+      print('LIVE CHAT ERROR: ${e.toString()}');
+    }
   }
 }
