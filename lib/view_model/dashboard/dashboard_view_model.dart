@@ -30,6 +30,9 @@ import 'package:cake_wallet/store/dashboard/trades_store.dart';
 import 'package:cake_wallet/store/dashboard/trade_filter_store.dart';
 import 'package:cake_wallet/store/dashboard/transaction_filter_store.dart';
 import 'package:cake_wallet/view_model/dashboard/formatted_item_list.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 part 'dashboard_view_model.g.dart';
 
@@ -278,5 +281,27 @@ abstract class DashboardViewModelBase with Store {
             transaction: transaction,
             balanceViewModel: balanceViewModel,
             settingsStore: appStore.settingsStore)));
+  }
+
+  void buyCryptoCurrency() async {
+    final url = 'https://buy-staging.moonpay.com';
+    final apiKey = 'pk_test_dubGBa4ePnmQ2zcsODzuTf0KTE9pUM';
+    final currencyCode = walletTypeToCryptoCurrency(type).title.toLowerCase();
+    final enabledPaymentMethods =
+        'credit_debit_card%2Capple_pay%2Cgoogle_pay%2Csamsung_pay'
+        '%2Csepa_bank_transfer%2Cgbp_bank_transfer%2Cgbp_open_banking_payment';
+
+    final originalUrl = url + '?apiKey=' + apiKey + '&currencyCode=' +
+    currencyCode + '&enabledPaymentMethods=' + enabledPaymentMethods +
+    '&walletAddress=' + address + '&showAllCurrencies=false' +
+    '&showWalletAddressForm=false';
+
+    /*final key = utf8.encode(apiKey);
+    final bytes = utf8.encode(originalUrl);
+    final signature = Hmac(sha256, key).convert(bytes);
+    final urlWithSignature = originalUrl + '&signature=' +
+          Uri.encodeComponent(base64.encode(signature.bytes));*/
+
+    if (await canLaunch(originalUrl)) await launch(originalUrl);
   }
 }
