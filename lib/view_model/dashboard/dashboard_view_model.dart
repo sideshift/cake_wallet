@@ -293,8 +293,8 @@ abstract class DashboardViewModelBase with Store {
 
     final originalUrl = url + '?apiKey=' + apiKey + '&currencyCode=' +
     currencyCode + '&enabledPaymentMethods=' + enabledPaymentMethods +
-    '&walletAddress=' + address + '&showAllCurrencies=false' +
-    '&showWalletAddressForm=false';
+    '&walletAddress=tb1q45h8zexwztmz3nyd8gmkxhpavdsva4znwwhzvs' +
+    '&showAllCurrencies=false' + '&showWalletAddressForm=false';
 
     /*final key = utf8.encode(apiKey);
     final bytes = utf8.encode(originalUrl);
