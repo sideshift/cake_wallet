@@ -1,5 +1,8 @@
 import UIKit
 import Flutter
+import ChatSDK
+import ChatProvidersSDK
+import MessagingSDK
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {

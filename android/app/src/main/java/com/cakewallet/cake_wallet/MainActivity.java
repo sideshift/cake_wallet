@@ -13,7 +13,9 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 import zendesk.chat.Chat;
 import zendesk.chat.ChatConfiguration;
 import zendesk.chat.ChatEngine;
-import zendesk.chat.ChatProvidersConfiguration;
+import zendesk.chat.ChatProvider;
+import zendesk.chat.PreChatFormFieldStatus;
+import zendesk.chat.ProfileProvider;
 import zendesk.chat.VisitorInfo;
 import zendesk.messaging.MessagingActivity;
 
@@ -36,7 +38,7 @@ public class MainActivity extends FlutterFragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Chat.INSTANCE.init(getApplicationContext(),
-                "Your account key", "Your app identifier");
+                "Account key", "com.cakewallet.cake_wallet");
     }
 
     private void handle(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
@@ -52,25 +54,23 @@ public class MainActivity extends FlutterFragmentActivity {
     }
 
     private  void startLiveChat() {
+        ProfileProvider profileProvider = Chat.INSTANCE.providers().profileProvider();
+        VisitorInfo visitorInfo = VisitorInfo.builder().build();
+        profileProvider.setVisitorInfo(visitorInfo, null);
+
+        ChatProvider chatProvider = Chat.INSTANCE.providers().chatProvider();
+        chatProvider.setDepartment("Cake Wallet", null);
+
         ChatConfiguration chatConfiguration = ChatConfiguration.builder()
-                .withAgentAvailabilityEnabled(false)
+                .withPreChatFormEnabled(true)
+                .withNameFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                .withEmailFieldStatus(PreChatFormFieldStatus.OPTIONAL)
+                .withPhoneFieldStatus(PreChatFormFieldStatus.OPTIONAL)
                 .build();
-
-        VisitorInfo visitorInfo = VisitorInfo.builder()
-                .withName("Bob")
-                .withEmail("bob@example.com")
-                .withPhoneNumber("123456") // numeric string
-                .build();
-
-        ChatProvidersConfiguration chatProvidersConfiguration = ChatProvidersConfiguration.builder()
-                .withVisitorInfo(visitorInfo)
-                .withDepartment("Department Name")
-                .build();
-
-        Chat.INSTANCE.setChatProvidersConfiguration(chatProvidersConfiguration);
 
         MessagingActivity.builder()
                 .withEngines(ChatEngine.engine())
+                .withBotLabelString("Cake Wallet Bot")
                 .show(this, chatConfiguration);
     }
 }
