@@ -13,6 +13,8 @@ import MessagingSDK
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         let batteryChannel = FlutterMethodChannel(name: "com.cakewallet.cakewallet/legacy_wallet_migration",
                                                   binaryMessenger: controller.binaryMessenger)
+        let liveChatChannel = FlutterMethodChannel(name: "com.cakewallet.cake_wallet/live-chat", binaryMessenger: controller.binaryMessenger)
+        
         batteryChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             
@@ -55,7 +57,43 @@ import MessagingSDK
             }
         })
         
+        liveChatChannel.setMethodCallHandler({
+            (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
+            
+            switch call.method {
+            case "startLiveChat":
+                do {
+                    try self.startChat()
+                } catch {
+                    result(nil)
+                }
+                result(nil)
+            default:
+                result(FlutterMethodNotImplemented)
+            }
+        })
+        
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    func startChat() throws {
+        Chat.initialize(accountKey: "Account key", appId: "com.cakewallet.cake_wallet")
+        
+        let messagingConfiguration = MessagingConfiguration()
+        messagingConfiguration.name = "Cake Wallet Bot"
+
+        let chatConfiguration = ChatConfiguration()
+        
+        let chatAPIConfiguration = ChatAPIConfiguration()
+        chatAPIConfiguration.department = "Cake Wallet"
+        chatAPIConfiguration.visitorInfo = VisitorInfo()
+        Chat.instance?.configuration = chatAPIConfiguration
+
+        let chatEngine = try ChatEngine.engine()
+        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [messagingConfiguration, chatConfiguration])
+
+        let controller = window?.rootViewController as! UINavigationController
+        controller.pushViewController(viewController, animated: true)
     }
 }
