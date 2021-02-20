@@ -27,7 +27,11 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+                <data android:scheme="monero" android:host="cakewallet.com" />
+                <data android:scheme="bitcoin" android:host="cakewallet.com" />
             </intent-filter>
+            <!-- Deep linking -->
+<meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
         </activity>
 
         <meta-data
