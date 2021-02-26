@@ -93,7 +93,7 @@ import MessagingSDK
         let chatEngine = try ChatEngine.engine()
         let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [messagingConfiguration, chatConfiguration])
 
-        let controller = window?.rootViewController as! UINavigationController
-        controller.pushViewController(viewController, animated: true)
+        let controller = self.window?.rootViewController
+        controller?.navigationController?.pushViewController(viewController, animated: true)
     }
 }
