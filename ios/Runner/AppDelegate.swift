@@ -87,7 +87,6 @@ import MessagingSDK
         
         let chatAPIConfiguration = ChatAPIConfiguration()
         chatAPIConfiguration.department = "Cake Wallet"
-        chatAPIConfiguration.visitorInfo = VisitorInfo()
         Chat.instance?.configuration = chatAPIConfiguration
 
         let chatEngine = try ChatEngine.engine()
