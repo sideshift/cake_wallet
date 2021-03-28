@@ -249,6 +249,11 @@ Route<dynamic> createRoute(RouteSettings settings) {
           builder: (context) => getIt.get<AuthPage>(instanceName: 'login'),
           fullscreenDialog: true);
 
+    case Routes.loginURI:
+      return CupertinoPageRoute<void>(
+          builder: (context) => getIt.get<AuthPage>(instanceName: 'loginURI'),
+          fullscreenDialog: true);
+
     case Routes.accountCreation:
       return CupertinoPageRoute<String>(
           builder: (_) => getIt.get<MoneroAccountEditOrCreatePage>(

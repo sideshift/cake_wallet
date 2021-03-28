@@ -8,7 +8,8 @@ class Routes {
   static const restoreOptions = '/restore_options';
   static const restoreOptionsFromWelcome = '/restore_options_from_welcome';
   static const restoreWalletOptions = '/restore_seed_keys';
-  static const restoreWalletOptionsFromWelcome = '/restore_wallet_options_from_welcome';
+  static const restoreWalletOptionsFromWelcome =
+      '/restore_wallet_options_from_welcome';
   static const restoreWalletFromSeed = '/restore_wallet_from_seed';
   static const restoreWalletFromKeys = '/restore_wallet_from_keys';
   static const dashboard = '/dashboard';
@@ -24,6 +25,7 @@ class Routes {
   static const nodeList = '/node_list';
   static const newNode = '/new_node_list';
   static const login = '/login';
+  static const loginURI = '/loginURI';
   static const splash = '/splash';
   static const accountCreation = '/account_new';
   static const addressBook = '/address_book';
