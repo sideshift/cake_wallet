@@ -27,7 +27,19 @@ import 'package:cake_wallet/exchange/trade.dart';
 import 'package:cake_wallet/exchange/exchange_template.dart';
 import 'package:cake_wallet/src/screens/root/root.dart';
 
+import 'package:uni_links/uni_links.dart';
+import 'dart:async';
+
 final navigatorKey = GlobalKey<NavigatorState>();
+// final StreamSubscription _sub = getUriLinksStream().listen((Uri uri) {
+//   // handle the uri
+//   print("The URI is" + uri.toString());
+// }, onError: () {
+//   // Handle exception by warning the user their action did not succeed
+// });
+
+//this is kinda hacky...not sure if there is a better way to capture the initial uri (an async function) and utilize it in an non-async function
+Uri initialURI = null;
 
 Future<void> main() async {
   try {
@@ -141,6 +153,7 @@ Future<void> initialSetup(
       exchangeTemplates: exchangeTemplates,
       transactionDescriptionBox: transactionDescriptions);
   await bootstrap(navigatorKey);
+  initialURI = await getInitialUri();
   monero_wallet.onStartup();
 }
 
@@ -159,7 +172,7 @@ class App extends StatelessWidget {
       final initialRoute =
           authenticationStore.state == AuthenticationState.denied
               ? Routes.disclaimer
-              : Routes.login;
+              : (initialURI == null ? Routes.login : Routes.loginURI);
       final currentTheme = settingsStore.currentTheme;
       final statusBarBrightness = currentTheme.type == ThemeType.dark
           ? Brightness.light
