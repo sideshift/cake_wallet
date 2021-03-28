@@ -132,7 +132,7 @@ Future setup(
 
   if (!_isSetupFinished) {
     getIt.registerSingletonAsync<SharedPreferences>(
-            () => SharedPreferences.getInstance());
+        () => SharedPreferences.getInstance());
   }
 
   final settingsStore = await SettingsStoreBase.load(nodeSource: _nodeSource);
@@ -232,6 +232,42 @@ Future setup(
   getIt.registerFactory<AuthPage>(
       () => AuthPage(getIt.get<AuthViewModel>(), onAuthenticationFinished:
               (isAuthenticated, AuthPageState authPageState) {
+            print("logging in with URI functionality");
+            if (!isAuthenticated) {
+              return;
+            }
+            final authStore = getIt.get<AuthenticationStore>();
+            final appStore = getIt.get<AppStore>();
+
+            if (appStore.wallet != null) {
+              authStore.allowed();
+
+              //THIS IS WHERE THE INITIAL URI NEEDS TO GO
+
+              return;
+            }
+
+            authPageState.changeProcessText('Loading the wallet');
+
+            if (loginError != null) {
+              authPageState
+                  .changeProcessText('ERROR: ${loginError.toString()}');
+            }
+
+            ReactionDisposer _reaction;
+            _reaction = reaction((_) => appStore.wallet, (Object _) {
+              _reaction?.reaction?.dispose();
+              authStore.allowed();
+
+              //THIS IS WHERE THE INITIAL URI NEEDS TO GO
+            });
+          }, closable: false),
+      instanceName: "loginURI");
+
+  getIt.registerFactory<AuthPage>(
+      () => AuthPage(getIt.get<AuthViewModel>(), onAuthenticationFinished:
+              (isAuthenticated, AuthPageState authPageState) {
+            print("logging in without URI functionality");
             if (!isAuthenticated) {
               return;
             }
