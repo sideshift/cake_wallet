@@ -72,7 +72,7 @@ class PresentProviderPicker extends StatelessWidget {
           images.add(Image.asset('assets/images/morph_icon.png'));
           break;
         case ExchangeProviderDescription.sideShift:
-          images.add(Image.asset('assets/images/sideshift.png'));
+          images.add(Image.asset('assets/images/sideshift_icon.png'));
           break;
       }
     }
