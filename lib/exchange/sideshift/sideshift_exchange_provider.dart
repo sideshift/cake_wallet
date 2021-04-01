@@ -30,6 +30,8 @@ class SideShiftExchangeProvider extends ExchangeProvider {
   static const _quoteSuffix = '/quotes';
   static const _orderSuffix = '/orders';
 
+  static String amount;
+
   @override
   String get title => 'SideShift.ai';
 
@@ -63,13 +65,14 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       {TradeRequest request, bool isFixedRateMode}) async {
     final orderUrl = apiUri + _orderSuffix;
     final _request = request as SideShiftRequest;
+    amount = _request.depositAmount;
 
     if (isFixedRateMode) {
       final quoteUrl = apiUri + _quoteSuffix;
 
       final quoteBody = {
-        'depositMethod': _request.depositMethod,
-        'settleMethod': _request.settleMethod,
+        'depositMethod': _request.depositMethod.toString().toLowerCase(),
+        'settleMethod': _request.settleMethod.toString().toLowerCase(),
         'depositAmount': _request.depositAmount
       };
 
@@ -77,7 +80,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(quoteBody));
 
-      if (quoteResponse.statusCode != 200) {
+      if (quoteResponse.statusCode != 201) {
         if (quoteResponse.statusCode == 400) {
           final quoteResponseJSON =
               json.decode(quoteResponse.body) as Map<String, dynamic>;
@@ -103,7 +106,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(fixedOrderBody));
 
-      if (fixedOrderResponse.statusCode != 200) {
+      if (fixedOrderResponse.statusCode != 201) {
         if (fixedOrderResponse.statusCode == 400) {
           final fixedOrderResponseJSON =
               json.decode(fixedOrderResponse.body) as Map<String, dynamic>;
@@ -131,8 +134,8 @@ class SideShiftExchangeProvider extends ExchangeProvider {
     } else {
       final variableOrderBody = {
         "type": "variable",
-        "depositMethodId": _request.depositMethod,
-        "settleMethodId": _request.settleMethod,
+        "depositMethodId": _request.depositMethod.toString().toLowerCase(),
+        "settleMethodId": _request.settleMethod.toString().toLowerCase(),
         "settleAddress": _request.settleAddress,
         "affiliateId": secrets.sideShiftAccountId
       };
@@ -141,7 +144,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(variableOrderBody));
 
-      if (variableOrderResponse.statusCode != 200) {
+      if (variableOrderResponse.statusCode != 201) {
         if (variableOrderResponse.statusCode == 400) {
           final variableOrderResponseJSON =
               json.decode(variableOrderResponse.body) as Map<String, dynamic>;
@@ -188,19 +191,16 @@ class SideShiftExchangeProvider extends ExchangeProvider {
 
       throw TradeNotFoundException(id, provider: description);
     }
-    print('fasz');
     final responseJSON = json.decode(response.body) as Map<String, dynamic>;
 
-    final expiredAt = responseJSON["expiresAt"] != null
-        ? DateTime.parse(responseJSON["expiresAt"] as String).toLocal()
-        : null;
+    final expiredAt =
+        DateTime.parse(responseJSON["expiresAtISO"] as String).toLocal();
 
     final depositMethodId = responseJSON["depositMethodId"] as String;
     final from = CryptoCurrency.fromString(depositMethodId);
     final settleMethodId = responseJSON["settleMethodId"] as String;
     final to = CryptoCurrency.fromString(settleMethodId);
     final inputAddress = responseJSON["depositAddress"]["address"] as String;
-    final amount = responseJSON["deposits"][0]["depositAmount"] as String;
     final state = responseJSON["deposits"][0]["status"] as String;
     final outputTransaction =
         responseJSON["deposits"][0]["settleTx"]["txHash"] as String;
