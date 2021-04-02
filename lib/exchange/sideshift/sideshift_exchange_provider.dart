@@ -53,6 +53,9 @@ class SideShiftExchangeProvider extends ExchangeProvider {
     final url = apiUri + _pairsSuffix + symbol;
 
     final response = await get(url);
+
+    handleError(response);
+
     final responseJSON = json.decode(response.body) as Map<String, dynamic>;
     final min = responseJSON["min"] as String;
     final max = responseJSON["max"] as String;
@@ -79,18 +82,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(quoteBody));
 
-      if (quoteResponse.statusCode != 201) {
-        if (quoteResponse.statusCode == 400) {
-          final quoteResponseJSON =
-              json.decode(quoteResponse.body) as Map<String, dynamic>;
-          final errorMessage = quoteResponseJSON["error"]["message"] as String;
-
-          throw TradeNotCreatedException(description,
-              description: errorMessage);
-        }
-
-        throw TradeNotCreatedException(description);
-      }
+      handleError(quoteResponse);
 
       final quoteResponseJSON =
           json.decode(quoteResponse.body) as Map<String, dynamic>;
@@ -105,17 +97,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(fixedOrderBody));
 
-      if (fixedOrderResponse.statusCode != 201) {
-        if (fixedOrderResponse.statusCode == 400) {
-          final fixedOrderResponseJSON =
-              json.decode(fixedOrderResponse.body) as Map<String, dynamic>;
-          final error = fixedOrderResponseJSON["error"]["message"] as String;
-
-          throw TradeNotCreatedException(description, description: error);
-        }
-
-        throw TradeNotCreatedException(description);
-      }
+      handleError(fixedOrderResponse);
 
       final fixedOrderResponseJSON =
           json.decode(fixedOrderResponse.body) as Map<String, dynamic>;
@@ -144,17 +126,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(variableOrderBody));
 
-      if (variableOrderResponse.statusCode != 201) {
-        if (variableOrderResponse.statusCode == 400) {
-          final variableOrderResponseJSON =
-              json.decode(variableOrderResponse.body) as Map<String, dynamic>;
-          final error = variableOrderResponseJSON["error"]["message"] as String;
-
-          throw TradeNotCreatedException(description, description: error);
-        }
-
-        throw TradeNotCreatedException(description);
-      }
+      handleError(variableOrderResponse);
 
       final variableOrderResponseJSON =
           json.decode(variableOrderResponse.body) as Map<String, dynamic>;
@@ -236,11 +208,26 @@ class SideShiftExchangeProvider extends ExchangeProvider {
 
     final response = await get(url);
 
+    handleError(response);
+
     final responseJSON = json.decode(response.body) as Map<String, dynamic>;
     final rate = responseJSON['rate'] as String;
 
     final estimatedAmount = amount / double.parse(rate);
 
     return estimatedAmount;
+  }
+
+  void handleError(Response response) {
+    if(response.statusCode != 200 && response.statusCode != 201) {
+      if (response.statusCode == 400) {
+        final responseJSON = json.decode(response.body) as Map<String, dynamic>;
+        final error = responseJSON["error"]["message"] as String;
+
+        throw TradeNotCreatedException(description, description: error);
+      }
+
+      throw TradeNotCreatedException(description);
+    }
   }
 }
