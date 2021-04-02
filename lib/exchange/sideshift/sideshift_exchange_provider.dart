@@ -40,7 +40,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
 
   @override
   ExchangeProviderDescription get description =>
-      ExchangeProviderDescription.sideShift;
+      ExchangeProviderDescription.sideshift;
 
   @override
   Future<bool> checkIsAvailable() async => true;

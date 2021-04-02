@@ -10,7 +10,7 @@ class ExchangeProviderDescription extends EnumerableItem<int>
       ExchangeProviderDescription(title: 'ChangeNOW', raw: 1);
   static const morphToken =
       ExchangeProviderDescription(title: 'MorphToken', raw: 2);
-  static const sideShift =
+  static const sideshift =
   ExchangeProviderDescription(title: 'SideShift.ai', raw: 3);
 
   static ExchangeProviderDescription deserialize({int raw}) {
@@ -22,7 +22,7 @@ class ExchangeProviderDescription extends EnumerableItem<int>
       case 2:
         return morphToken;
       case 3:
-        return sideShift;
+        return sideshift;
       default:
         return null;
     }

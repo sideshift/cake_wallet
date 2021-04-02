@@ -38,7 +38,7 @@ abstract class TradeFilterStoreBase with Store {
       case ExchangeProviderDescription.morphToken:
         displayMorphToken = !displayMorphToken;
         break;
-      case ExchangeProviderDescription.sideShift:
+      case ExchangeProviderDescription.sideshift:
         displaySideShift = !displaySideShift;
         break;
     }
@@ -62,7 +62,7 @@ abstract class TradeFilterStoreBase with Store {
                 ExchangeProviderDescription.morphToken) ||
         (displaySideShift &&
             item.trade.provider ==
-                ExchangeProviderDescription.sideShift) )
+                ExchangeProviderDescription.sideshift) )
         .toList()
         : _trades;
   }

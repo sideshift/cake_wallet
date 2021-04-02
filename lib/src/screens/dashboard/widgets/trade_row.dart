@@ -87,7 +87,7 @@ class TradeRow extends StatelessWidget {
       case ExchangeProviderDescription.morphToken:
         image = Image.asset('assets/images/morph.png', height: 36, width: 36);
         break;
-      case ExchangeProviderDescription.sideShift:
+      case ExchangeProviderDescription.sideshift:
         image = Image.asset('assets/images/sideshift.png', height: 36, width: 36);
         break;
       default:

@@ -96,7 +96,7 @@ abstract class DashboardViewModelBase with Store {
             value: () => tradeFilterStore.displaySideShift,
             caption: 'SideShift.ai',
             onChanged: (value) => tradeFilterStore
-                .toggleDisplayExchange(ExchangeProviderDescription.sideShift)),
+                .toggleDisplayExchange(ExchangeProviderDescription.sideshift)),
       ]
     };
 
