@@ -36,8 +36,8 @@ abstract class ExchangeViewModelBase with Store {
   ExchangeViewModelBase(this.wallet, this.trades, this._exchangeTemplateStore,
       this.tradesStore, this._settingsStore) {
     providerList = [
+      SideShiftExchangeProvider(),
       ChangeNowExchangeProvider(),
-      SideShiftExchangeProvider()
     ];
 
     _initialPairBasedOnWallet();
