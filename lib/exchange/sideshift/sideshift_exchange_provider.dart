@@ -15,7 +15,7 @@ import 'package:cake_wallet/exchange/exchange_provider_description.dart';
 import 'package:cake_wallet/exchange/trade_not_created_exeption.dart';
 
 class SideShiftExchangeProvider extends ExchangeProvider {
-  SideShiftExchangeProvider()
+  SideShiftExchangeProvider({this.trade})
       : super(
             pairList: CryptoCurrency.all
                 .map((i) => CryptoCurrency.all
@@ -30,7 +30,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
   static const _quoteSuffix = '/quotes';
   static const _orderSuffix = '/orders';
 
-  static String amount;
+  Trade trade;
 
   @override
   String get title => 'SideShift.ai';
@@ -65,7 +65,6 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       {TradeRequest request, bool isFixedRateMode}) async {
     final orderUrl = apiUri + _orderSuffix;
     final _request = request as SideShiftRequest;
-    amount = _request.depositAmount;
 
     if (isFixedRateMode) {
       final quoteUrl = apiUri + _quoteSuffix;
@@ -125,6 +124,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           id: fixedOrderResponseJSON["id"] as String,
           from: _request.depositMethod,
           to: _request.settleMethod,
+          amount: _request.depositAmount,
           provider: description,
           inputAddress:
               fixedOrderResponseJSON["depositAddress"]["address"] as String,
@@ -167,6 +167,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           id: id,
           from: _request.depositMethod,
           to: _request.settleMethod,
+          amount: _request.depositAmount,
           provider: description,
           inputAddress: inputAddress,
           refundAddress: _request.refundAddress,
@@ -191,6 +192,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
 
       throw TradeNotFoundException(id, provider: description);
     }
+
     final responseJSON = json.decode(response.body) as Map<String, dynamic>;
 
     final expiredAt =
@@ -204,6 +206,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
     final state = responseJSON["deposits"][0]["status"] as String;
     final outputTransaction =
         responseJSON["deposits"][0]["settleTx"]["txHash"] as String;
+    final amount = trade.amount;
 
     return Trade(
       id: id,
