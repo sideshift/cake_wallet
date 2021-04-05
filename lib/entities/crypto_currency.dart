@@ -43,6 +43,7 @@ class CryptoCurrency extends EnumerableItem<int> with Serializable<int> {
     CryptoCurrency.xaut,
     CryptoCurrency.xlm,
     CryptoCurrency.xrp,
+    CryptoCurrency.xtz,
     CryptoCurrency.yfi,
     CryptoCurrency.zec,
     CryptoCurrency.zecShielded,
@@ -95,6 +96,7 @@ class CryptoCurrency extends EnumerableItem<int> with Serializable<int> {
     CryptoCurrency.wbtc,
     CryptoCurrency.xai,
     CryptoCurrency.xaut,
+    CryptoCurrency.xtz,
     CryptoCurrency.xlm,
     CryptoCurrency.yfi,
     CryptoCurrency.zec,
@@ -134,9 +136,10 @@ class CryptoCurrency extends EnumerableItem<int> with Serializable<int> {
   static const xaut = CryptoCurrency(title: 'XAUT', raw: 30);
   static const xlm = CryptoCurrency(title: 'XLM', raw: 31);
   static const xrp = CryptoCurrency(title: 'XRP', raw: 32);
-  static const yfi = CryptoCurrency(title: 'YFI', raw: 33);
-  static const zec = CryptoCurrency(title: 'ZEC', raw: 34);
-  static const zecShielded = CryptoCurrency(title: 'ZECSHIELDED', raw: 35);
+  static const xtz = CryptoCurrency(title: 'XTZ', raw: 33);
+  static const yfi = CryptoCurrency(title: 'YFI', raw: 34);
+  static const zec = CryptoCurrency(title: 'ZEC', raw: 35);
+  static const zecShielded = CryptoCurrency(title: 'ZECSHIELDED', raw: 36);
 
   static CryptoCurrency deserialize({int raw}) {
     switch (raw) {
@@ -207,10 +210,12 @@ class CryptoCurrency extends EnumerableItem<int> with Serializable<int> {
       case 32:
         return CryptoCurrency.xrp;
       case 33:
-        return CryptoCurrency.yfi;
+        return CryptoCurrency.xtz;
       case 34:
-        return CryptoCurrency.zec;
+        return CryptoCurrency.yfi;
       case 35:
+        return CryptoCurrency.zec;
+      case 36:
         return CryptoCurrency.zecShielded;
       default:
         return null;
@@ -285,6 +290,8 @@ class CryptoCurrency extends EnumerableItem<int> with Serializable<int> {
         return CryptoCurrency.xlm;
       case 'xrp':
         return CryptoCurrency.xrp;
+      case 'xtz':
+        return CryptoCurrency.xtz;
       case 'yfi':
         return CryptoCurrency.yfi;
       case 'zec':
