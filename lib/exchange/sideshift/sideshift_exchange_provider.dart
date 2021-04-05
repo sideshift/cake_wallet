@@ -17,8 +17,8 @@ import 'package:cake_wallet/exchange/trade_not_created_exeption.dart';
 class SideShiftExchangeProvider extends ExchangeProvider {
   SideShiftExchangeProvider({this.trade})
       : super(
-            pairList: CryptoCurrency.all
-                .map((i) => CryptoCurrency.all
+            pairList: CryptoCurrency.sideshift
+                .map((i) => CryptoCurrency.sideshift
                     .map((k) => ExchangePair(from: i, to: k, reverse: true))
                     .where((c) => c != null))
                 .expand((i) => i)

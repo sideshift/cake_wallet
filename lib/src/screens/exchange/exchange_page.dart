@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:cake_wallet/entities/sync_status.dart';
 import 'package:cake_wallet/entities/wallet_type.dart';
 import 'package:cake_wallet/exchange/changenow/changenow_exchange_provider.dart';
+import 'package:cake_wallet/exchange/sideshift/sideshift_exchange_provider.dart';
 import 'package:cake_wallet/src/widgets/standard_checkbox.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
@@ -186,7 +187,10 @@ class ExchangePage extends BasePage {
                                 exchangeViewModel.isDepositAddressEnabled,
                                 isAmountEstimated: false,
                                 hasRefundAddress: true,
-                                currencies: CryptoCurrency.all,
+                                currencies: exchangeViewModel.provider
+                                is SideShiftExchangeProvider
+                                    ? CryptoCurrency.sideshift
+                                    : CryptoCurrency.changeNow,
                                 onCurrencySelected: (currency) {
                                   // FIXME: need to move it into view model
                                   if (currency == CryptoCurrency.xmr &&
@@ -248,7 +252,10 @@ class ExchangePage extends BasePage {
                                   exchangeViewModel
                                       .isReceiveAddressEnabled,
                                   isAmountEstimated: true,
-                                  currencies: CryptoCurrency.all,
+                                  currencies: exchangeViewModel.provider
+                                  is SideShiftExchangeProvider
+                                      ? CryptoCurrency.sideshift
+                                      : CryptoCurrency.changeNow,
                                   onCurrencySelected: (currency) =>
                                       exchangeViewModel
                                           .changeReceiveCurrency(
