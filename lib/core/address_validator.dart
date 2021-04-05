@@ -85,7 +85,7 @@ class AddressValidator extends TextValidator {
       case CryptoCurrency.xrp:
         return null;
       default:
-        return [];
+        return null;
     }
   }
 }
