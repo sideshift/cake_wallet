@@ -237,8 +237,10 @@ class CryptoCurrency extends EnumerableItem<int> with Serializable<int> {
       case 'btc':
         return CryptoCurrency.btc;
       case 'btcliquid':
+      case 'liquid':
         return CryptoCurrency.btcLiquid;
       case 'btcpayjoin':
+      case 'payjoin':
         return CryptoCurrency.btcPayjoin;
       case 'comp':
         return CryptoCurrency.comp;
@@ -279,6 +281,7 @@ class CryptoCurrency extends EnumerableItem<int> with Serializable<int> {
       case 'usdterc20':
         return CryptoCurrency.usdterc20;
       case 'usdtliquid':
+      case 'usdtla':
         return CryptoCurrency.usdtLiquid;
       case 'wbtc':
         return CryptoCurrency.wbtc;
@@ -297,6 +300,7 @@ class CryptoCurrency extends EnumerableItem<int> with Serializable<int> {
       case 'zec':
         return CryptoCurrency.zec;
       case 'zecshielded':
+      case 'zaddr':
         return CryptoCurrency.zecShielded;
       default:
         return null;

@@ -49,7 +49,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
   Future<Limits> fetchLimits(
       {CryptoCurrency from, CryptoCurrency to, bool isFixedRateMode}) async {
     final symbol =
-        from.toString().toLowerCase() + '/' + to.toString().toLowerCase();
+        transcribeCurrencyCode(from) + '/' + transcribeCurrencyCode(to);
     final url = apiUri + _pairsSuffix + symbol;
 
     final response = await get(url);
@@ -73,8 +73,8 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       final quoteUrl = apiUri + _quoteSuffix;
 
       final quoteBody = {
-        'depositMethod': _request.depositMethod.toString().toLowerCase(),
-        'settleMethod': _request.settleMethod.toString().toLowerCase(),
+        'depositMethod': transcribeCurrencyCode(_request.depositMethod),
+        'settleMethod': transcribeCurrencyCode(_request.settleMethod),
         'depositAmount': _request.depositAmount
       };
 
@@ -116,8 +116,8 @@ class SideShiftExchangeProvider extends ExchangeProvider {
     } else {
       final variableOrderBody = {
         "type": "variable",
-        "depositMethodId": _request.depositMethod.toString().toLowerCase(),
-        "settleMethodId": _request.settleMethod.toString().toLowerCase(),
+        "depositMethodId": transcribeCurrencyCode(_request.depositMethod),
+        "settleMethodId": transcribeCurrencyCode(_request.settleMethod),
         "settleAddress": _request.settleAddress,
         "affiliateId": secrets.sideShiftAccountId
       };
@@ -202,9 +202,9 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       bool isReceiveAmount}) async {
     final url = apiUri +
         _pairsSuffix +
-        to.toString().toLowerCase() +
+        transcribeCurrencyCode(to) +
         '/' +
-        from.toString().toLowerCase();
+        transcribeCurrencyCode(from);
 
     final response = await get(url);
 
@@ -219,7 +219,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
   }
 
   void handleError(Response response) {
-    if(response.statusCode != 200 && response.statusCode != 201) {
+    if (response.statusCode != 200 && response.statusCode != 201) {
       if (response.statusCode == 400) {
         final responseJSON = json.decode(response.body) as Map<String, dynamic>;
         final error = responseJSON["error"]["message"] as String;
@@ -228,6 +228,25 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       }
 
       throw TradeNotCreatedException(description);
+    }
+  }
+
+  String transcribeCurrencyCode(CryptoCurrency currencyCode) {
+    switch (currencyCode) {
+      case CryptoCurrency.btcLiquid:
+        return 'liquid';
+      case CryptoCurrency.btcPayjoin:
+        return 'payjoin';
+      case CryptoCurrency.usdtLiquid:
+        return 'usdtla';
+      case CryptoCurrency.usdterc20:
+        return 'usdtErc20';
+      case CryptoCurrency.usdtBCH:
+        return 'usdtBch';
+      case CryptoCurrency.zecShielded:
+        return 'zaddr';
+      default:
+        return currencyCode.toString().toLowerCase();
     }
   }
 }
