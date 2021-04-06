@@ -21,6 +21,7 @@ class SecretKey {
     SecretKey('wyreSecretKey', () => ''),
     SecretKey('wyreApiKey', () => ''),
     SecretKey('wyreAccountId', () => ''),
+    SecretKey('sideShiftAccountId', () => '')
   ];
 
   final String name;
