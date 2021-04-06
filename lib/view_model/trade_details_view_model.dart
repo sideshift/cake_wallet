@@ -34,7 +34,7 @@ abstract class TradeDetailsViewModelBase with Store {
         _provider = MorphTokenExchangeProvider(trades: trades);
         break;
       case ExchangeProviderDescription.sideshift:
-        _provider = SideShiftExchangeProvider();
+        _provider = SideShiftExchangeProvider(trade: trade);
         break;
     }
 

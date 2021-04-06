@@ -153,17 +153,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
     final url = apiUri + _orderSuffix + '/' + id;
     final response = await get(url);
 
-    if (response.statusCode != 200) {
-      if (response.statusCode == 400) {
-        final responseJSON = json.decode(response.body) as Map<String, dynamic>;
-        final error = responseJSON["error"]["message"] as String;
-
-        throw TradeNotFoundException(id,
-            provider: description, description: error);
-      }
-
-      throw TradeNotFoundException(id, provider: description);
-    }
+    handleError(response);
 
     final responseJSON = json.decode(response.body) as Map<String, dynamic>;
 
@@ -176,8 +166,10 @@ class SideShiftExchangeProvider extends ExchangeProvider {
     final to = CryptoCurrency.fromString(settleMethodId);
     final inputAddress = responseJSON["depositAddress"]["address"] as String;
     final state = responseJSON["deposits"][0]["status"] as String;
+    final settleTx =
+        responseJSON["deposits"][0]["settleTx"] as Map<String, dynamic>;
     final outputTransaction =
-        responseJSON["deposits"][0]["settleTx"]["txHash"] as String;
+        settleTx != null ? settleTx["txHash"] as String : null;
     final amount = trade.amount;
 
     return Trade(
