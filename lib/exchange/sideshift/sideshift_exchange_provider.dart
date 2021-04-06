@@ -134,6 +134,8 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       final id = variableOrderResponseJSON["id"] as String;
       final inputAddress =
           variableOrderResponseJSON["depositAddress"]["address"] as String;
+      final extraId =
+          variableOrderResponseJSON["depositAddress"]["memo"] as String;
 
       return Trade(
           id: id,
@@ -142,6 +144,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           amount: _request.depositAmount,
           provider: description,
           inputAddress: inputAddress,
+          extraId: extraId,
           refundAddress: _request.refundAddress,
           createdAt: DateTime.now(),
           state: TradeState.created);
