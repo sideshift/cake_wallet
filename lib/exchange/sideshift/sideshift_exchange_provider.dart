@@ -25,7 +25,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
                 .toList());
 
   static const apiUri = 'https://sideshift.ai/api/v1';
-  static const accountId = secrets.sideShiftAccountId;
+  static const accountId = secrets.sideshiftAccountId;
   static const _pairsSuffix = '/pairs/';
   static const _quoteSuffix = '/quotes';
   static const _orderSuffix = '/orders';
@@ -52,13 +52,14 @@ class SideShiftExchangeProvider extends ExchangeProvider {
         transcribeCurrencyCode(from) + '/' + transcribeCurrencyCode(to);
     final url = apiUri + _pairsSuffix + symbol;
 
-    final response = await get(url);
+    final pairsResponse = await get(url);
 
-    handleError(response);
+    handleError(pairsResponse);
 
-    final responseJSON = json.decode(response.body) as Map<String, dynamic>;
-    final min = responseJSON["min"] as String;
-    final max = responseJSON["max"] as String;
+    final pairsResponseJSON =
+        json.decode(pairsResponse.body) as Map<String, dynamic>;
+    final min = pairsResponseJSON["min"] as String;
+    final max = pairsResponseJSON["max"] as String;
 
     return Limits(min: double.parse(min), max: double.parse(max));
   }
@@ -119,7 +120,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
         "depositMethodId": transcribeCurrencyCode(_request.depositMethod),
         "settleMethodId": transcribeCurrencyCode(_request.settleMethod),
         "settleAddress": _request.settleAddress,
-        "affiliateId": secrets.sideShiftAccountId
+        "affiliateId": secrets.sideshiftAccountId
       };
 
       final variableOrderResponse = await post(orderUrl,
@@ -131,20 +132,22 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       final variableOrderResponseJSON =
           json.decode(variableOrderResponse.body) as Map<String, dynamic>;
 
-      final id = variableOrderResponseJSON["id"] as String;
-      final inputAddress =
-          variableOrderResponseJSON["depositAddress"]["address"] as String;
-      final extraId =
-          variableOrderResponseJSON["depositAddress"]["memo"] as String;
+      // final id = variableOrderResponseJSON["id"] as String;
+      // final inputAddress =
+      //     variableOrderResponseJSON["depositAddress"]["address"] as String;
+      // final extraId =
+      //     variableOrderResponseJSON["depositAddress"]["memo"] as String;
 
       return Trade(
-          id: id,
+          id: variableOrderResponseJSON["id"] as String,
           from: _request.depositMethod,
           to: _request.settleMethod,
           amount: _request.depositAmount,
           provider: description,
-          inputAddress: inputAddress,
-          extraId: extraId,
+          inputAddress:
+              variableOrderResponseJSON["depositAddress"]["address"] as String,
+          extraId:
+              variableOrderResponseJSON["depositAddress"]["memo"] as String,
           refundAddress: _request.refundAddress,
           createdAt: DateTime.now(),
           state: TradeState.created);
@@ -154,23 +157,25 @@ class SideShiftExchangeProvider extends ExchangeProvider {
   @override
   Future<Trade> findTradeById({@required String id}) async {
     final url = apiUri + _orderSuffix + '/' + id;
-    final response = await get(url);
+    final ordersResponse = await get(url);
 
-    handleError(response);
+    handleError(ordersResponse);
 
-    final responseJSON = json.decode(response.body) as Map<String, dynamic>;
+    final ordersResponseJSON =
+        json.decode(ordersResponse.body) as Map<String, dynamic>;
 
     final expiredAt =
-        DateTime.parse(responseJSON["expiresAtISO"] as String).toLocal();
-
-    final depositMethodId = responseJSON["depositMethodId"] as String;
+        DateTime.parse(ordersResponseJSON["expiresAtISO"] as String).toLocal();
+    final depositMethodId = ordersResponseJSON["depositMethodId"] as String;
     final from = CryptoCurrency.fromString(depositMethodId);
-    final settleMethodId = responseJSON["settleMethodId"] as String;
+    final settleMethodId = ordersResponseJSON["settleMethodId"] as String;
     final to = CryptoCurrency.fromString(settleMethodId);
-    final inputAddress = responseJSON["depositAddress"]["address"] as String;
-    final state = responseJSON["deposits"][0]["status"] as String;
+    final inputAddress =
+        ordersResponseJSON["depositAddress"]["address"] as String;
+    final extraId = ordersResponseJSON["depositAddress"]["memo"] as String;
+    final state = ordersResponseJSON["deposits"][0]["status"] as String;
     final settleTx =
-        responseJSON["deposits"][0]["settleTx"] as Map<String, dynamic>;
+        ordersResponseJSON["deposits"][0]["settleTx"] as Map<String, dynamic>;
     final outputTransaction =
         settleTx != null ? settleTx["txHash"] as String : null;
     final amount = trade.amount;
@@ -181,6 +186,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       to: to,
       provider: description,
       inputAddress: inputAddress,
+      extraId: extraId,
       amount: amount,
       state: TradeState.deserialize(raw: state),
       expiredAt: expiredAt,
@@ -201,12 +207,12 @@ class SideShiftExchangeProvider extends ExchangeProvider {
         '/' +
         transcribeCurrencyCode(from);
 
-    final response = await get(url);
+    final pairsResponse = await get(url);
 
-    handleError(response);
+    handleError(pairsResponse);
 
-    final responseJSON = json.decode(response.body) as Map<String, dynamic>;
-    final rate = responseJSON['rate'] as String;
+    final pairsResponseJSON = json.decode(pairsResponse.body) as Map<String, dynamic>;
+    final rate = pairsResponseJSON['rate'] as String;
 
     final estimatedAmount = amount / double.parse(rate);
 

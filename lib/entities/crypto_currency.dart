@@ -127,7 +127,7 @@ class CryptoCurrency extends EnumerableItem<int> with Serializable<int> {
   static const uni = CryptoCurrency(title: 'UNI', raw: 21);
   static const usdc = CryptoCurrency(title: 'USDC', raw: 22);
   static const usdh = CryptoCurrency(title: 'USDH', raw: 23);
-  static const usdt = CryptoCurrency(title: 'USDTOMNI', raw: 24);
+  static const usdt = CryptoCurrency(title: 'USDT', raw: 24);
   static const usdtBCH = CryptoCurrency(title: 'USDTBCH', raw: 25);
   static const usdterc20 = CryptoCurrency(title: 'USDTERC20', raw: 26);
   static const usdtLiquid = CryptoCurrency(title: 'USDTLIQUID', raw: 27);
