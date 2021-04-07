@@ -54,8 +54,6 @@ class SideShiftExchangeProvider extends ExchangeProvider {
 
     final pairsResponse = await get(url);
 
-    handleError(pairsResponse);
-
     final pairsResponseJSON =
         json.decode(pairsResponse.body) as Map<String, dynamic>;
     final min = pairsResponseJSON["min"] as String;
@@ -83,7 +81,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(quoteBody));
 
-      handleError(quoteResponse);
+      handleCreateOrderError(quoteResponse);
 
       final quoteResponseJSON =
           json.decode(quoteResponse.body) as Map<String, dynamic>;
@@ -98,7 +96,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(fixedOrderBody));
 
-      handleError(fixedOrderResponse);
+      handleCreateOrderError(fixedOrderResponse);
 
       final fixedOrderResponseJSON =
           json.decode(fixedOrderResponse.body) as Map<String, dynamic>;
@@ -111,6 +109,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           provider: description,
           inputAddress:
               fixedOrderResponseJSON["depositAddress"]["address"] as String,
+          extraId: fixedOrderResponseJSON["depositAddress"]["memo"] as String,
           refundAddress: _request.refundAddress,
           createdAt: DateTime.now(),
           state: TradeState.created);
@@ -127,16 +126,10 @@ class SideShiftExchangeProvider extends ExchangeProvider {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(variableOrderBody));
 
-      handleError(variableOrderResponse);
+      handleCreateOrderError(variableOrderResponse);
 
       final variableOrderResponseJSON =
           json.decode(variableOrderResponse.body) as Map<String, dynamic>;
-
-      // final id = variableOrderResponseJSON["id"] as String;
-      // final inputAddress =
-      //     variableOrderResponseJSON["depositAddress"]["address"] as String;
-      // final extraId =
-      //     variableOrderResponseJSON["depositAddress"]["memo"] as String;
 
       return Trade(
           id: variableOrderResponseJSON["id"] as String,
@@ -159,7 +152,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
     final url = apiUri + _orderSuffix + '/' + id;
     final ordersResponse = await get(url);
 
-    handleError(ordersResponse);
+    handleTradeNotFoundError(id, ordersResponse);
 
     final ordersResponseJSON =
         json.decode(ordersResponse.body) as Map<String, dynamic>;
@@ -209,9 +202,8 @@ class SideShiftExchangeProvider extends ExchangeProvider {
 
     final pairsResponse = await get(url);
 
-    handleError(pairsResponse);
-
-    final pairsResponseJSON = json.decode(pairsResponse.body) as Map<String, dynamic>;
+    final pairsResponseJSON =
+        json.decode(pairsResponse.body) as Map<String, dynamic>;
     final rate = pairsResponseJSON['rate'] as String;
 
     final estimatedAmount = amount / double.parse(rate);
@@ -219,7 +211,7 @@ class SideShiftExchangeProvider extends ExchangeProvider {
     return estimatedAmount;
   }
 
-  void handleError(Response response) {
+  void handleCreateOrderError(Response response) {
     if (response.statusCode != 200 && response.statusCode != 201) {
       if (response.statusCode == 400) {
         final responseJSON = json.decode(response.body) as Map<String, dynamic>;
@@ -229,6 +221,21 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       }
 
       throw TradeNotCreatedException(description);
+    }
+  }
+
+  void handleTradeNotFoundError(String id, Response response) {
+    if (response.statusCode != 200) {
+      if (response.statusCode == 400) {
+        final ordersResponseJSON =
+            json.decode(response.body) as Map<String, dynamic>;
+        final error = ordersResponseJSON["error"]["message"] as String;
+
+        throw TradeNotFoundException(id,
+            provider: description, description: error);
+      }
+
+      throw TradeNotFoundException(id, provider: description);
     }
   }
 
