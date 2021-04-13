@@ -89,7 +89,8 @@ class SideShiftExchangeProvider extends ExchangeProvider {
       final fixedOrderBody = {
         "type": "fixed",
         "quoteId": quoteResponseJSON["id"] as String,
-        "settleAddress": _request.settleAddress
+        "settleAddress": _request.settleAddress,
+        "refundAddress": _request.refundAddress
       };
 
       final fixedOrderResponse = await post(orderUrl,
@@ -119,7 +120,8 @@ class SideShiftExchangeProvider extends ExchangeProvider {
         "depositMethodId": transcribeCurrencyCode(_request.depositMethod),
         "settleMethodId": transcribeCurrencyCode(_request.settleMethod),
         "settleAddress": _request.settleAddress,
-        "affiliateId": secrets.sideshiftAccountId
+        "affiliateId": secrets.sideshiftAccountId,
+        "refundAddress": _request.refundAddress
       };
 
       final variableOrderResponse = await post(orderUrl,
